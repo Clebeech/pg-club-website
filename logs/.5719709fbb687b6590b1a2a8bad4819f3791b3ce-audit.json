@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 14
+    },
+    "auditLog": "/Users/tigerxu/Desktop/pg_website/logs/.5719709fbb687b6590b1a2a8bad4819f3791b3ce-audit.json",
+    "files": [
+        {
+            "date": 1754395578373,
+            "name": "/Users/tigerxu/Desktop/pg_website/logs/mcp-puppeteer-2025-08-05.log",
+            "hash": "033e6d34373478a949273161dfa1dd2023d9245dee2f309647649af2665e4e6e"
+        }
+    ],
+    "hashType": "sha256"
+}
