@@ -6,6 +6,7 @@
   <title>RUC P&G Club - 创新与投资俱乐部</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;700&family=Montserrat:wght@300;600;700&family=Bebas+Neue&family=Oswald:wght@300;500;700&family=Avenir:wght@300;400;700;900&display=swap" rel="stylesheet">
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * {
       margin: 0;
@@ -1895,6 +1896,433 @@
         font-size: 1rem;
       }
     }
+
+    /* 联系我们部分样式 */
+    .contact-section {
+      position: relative;
+      padding: 100px 20px;
+      min-height: 100vh;
+      overflow: hidden;
+      background: #f8fafc;
+    }
+
+    .contact-background {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      z-index: 1;
+    }
+
+    .contact-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, 
+        rgba(0, 0, 0, 0.5) 0%, 
+        rgba(255, 255, 255, 0.9) 30%,
+        rgba(255, 255, 255, 0.95) 100%);
+      z-index: 2;
+    }
+
+    .contact-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      position: relative;
+      z-index: 3;
+    }
+
+    .contact-part {
+      margin-bottom: 80px;
+    }
+
+    /* 招新流程时间轴样式 */
+    .recruitment-timeline {
+      margin: 50px 0;
+      position: relative;
+    }
+
+    .recruitment-timeline .timeline-item {
+      display: flex;
+      align-items: flex-start;
+      margin-bottom: 50px;
+      position: relative;
+    }
+
+    .recruitment-timeline .timeline-item.reverse {
+      flex-direction: row-reverse;
+    }
+
+    .recruitment-timeline .timeline-item.reverse .timeline-content {
+      text-align: right;
+    }
+
+    .timeline-date {
+      flex: 0 0 120px;
+      margin: 0 30px;
+    }
+
+    .date-box {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      padding: 15px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+      min-width: 100px;
+    }
+
+    .date-box .month {
+      display: block;
+      font-size: 0.9rem;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+
+    .date-box .day {
+      display: block;
+      font-size: 1.8rem;
+      font-weight: 700;
+    }
+
+    .recruitment-timeline .timeline-content {
+      flex: 1;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 25px;
+      border-radius: 15px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      border-left: 4px solid #6366f1;
+    }
+
+    .recruitment-timeline .timeline-item.reverse .timeline-content {
+      border-left: none;
+      border-right: 4px solid #6366f1;
+    }
+
+    .timeline-icon {
+      font-size: 2rem;
+      margin-bottom: 10px;
+    }
+
+    .recruitment-timeline .timeline-content h4 {
+      font-size: 1.4rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .recruitment-timeline .timeline-content p {
+      font-size: 1rem;
+      line-height: 1.6;
+      color: #475569;
+      margin-bottom: 15px;
+    }
+
+    .timeline-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .action-item {
+      background: rgba(99, 102, 241, 0.1);
+      color: #6366f1;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-size: 0.9rem;
+      font-weight: 500;
+    }
+
+    .deadline-warning {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      background: rgba(239, 68, 68, 0.1);
+      color: #dc2626;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-left: 3px solid #dc2626;
+    }
+
+    /* 在线申请系统样式 */
+    .application-system {
+      margin-top: 60px;
+      background: rgba(255, 255, 255, 0.95);
+      border-radius: 20px;
+      padding: 40px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+    }
+
+    .system-header {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .system-header h3 {
+      font-size: 2rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .system-header p {
+      font-size: 1.1rem;
+      color: #64748b;
+    }
+
+    .application-form {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .form-section {
+      margin-bottom: 40px;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .form-section h4 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group.full-width {
+      grid-column: 1 / -1;
+    }
+
+    .form-group label {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #374151;
+      margin-bottom: 8px;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 12px 15px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: #ffffff;
+    }
+
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus {
+      outline: none;
+      border-color: #6366f1;
+      box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+    }
+
+    .form-group textarea {
+      min-height: 120px;
+      resize: vertical;
+      font-family: inherit;
+    }
+
+    .recommendation-group {
+      display: flex;
+      gap: 15px;
+      align-items: center;
+    }
+
+    .recommendation-group select {
+      width: 120px;
+    }
+
+    .recommendation-group input {
+      flex: 1;
+    }
+
+    .char-count {
+      text-align: right;
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-top: 5px;
+    }
+
+    /* 文件上传样式 */
+    .upload-area {
+      border: 2px dashed #d1d5db;
+      border-radius: 12px;
+      padding: 40px;
+      text-align: center;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      background: #f9fafb;
+    }
+
+    .upload-area:hover {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.05);
+    }
+
+    .upload-area.dragover {
+      border-color: #6366f1;
+      background: rgba(99, 102, 241, 0.1);
+    }
+
+    .upload-content i {
+      font-size: 3rem;
+      color: #9ca3af;
+      margin-bottom: 15px;
+    }
+
+    .upload-content p {
+      font-size: 1.1rem;
+      color: #374151;
+      margin-bottom: 10px;
+    }
+
+    .upload-hint {
+      font-size: 0.9rem;
+      color: #6b7280;
+    }
+
+    .uploaded-file {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      background: rgba(34, 197, 94, 0.1);
+      border: 2px solid #22c55e;
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    .uploaded-file i {
+      font-size: 2rem;
+      color: #dc2626;
+    }
+
+    .uploaded-file .file-name {
+      flex: 1;
+      font-weight: 500;
+      color: #374151;
+    }
+
+    .remove-file {
+      background: #ef4444;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 30px;
+      height: 30px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .remove-file:hover {
+      background: #dc2626;
+    }
+
+    /* 提交按钮样式 */
+    .form-submit {
+      text-align: center;
+      margin-top: 40px;
+    }
+
+    .submit-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      border: none;
+      padding: 18px 40px;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+    }
+
+    .submit-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.4);
+    }
+
+    .submit-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .submit-note {
+      font-size: 0.9rem;
+      color: #6b7280;
+      margin-top: 15px;
+    }
+
+    /* 响应式设计 */
+    @media (max-width: 768px) {
+      .contact-section {
+        padding: 60px 20px;
+      }
+
+      .recruitment-timeline .timeline-item,
+      .recruitment-timeline .timeline-item.reverse {
+        flex-direction: column;
+        text-align: center;
+      }
+
+      .timeline-date {
+        margin: 0 0 20px 0;
+        align-self: center;
+      }
+
+      .recruitment-timeline .timeline-content {
+        border-left: 4px solid #6366f1;
+        border-right: none;
+      }
+
+      .application-system {
+        padding: 25px;
+      }
+
+      .form-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .system-header h3 {
+        font-size: 1.5rem;
+      }
+
+      .recommendation-group {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .recommendation-group select {
+        width: 100%;
+      }
+    }
   </style>
 </head>
 <body>
@@ -1909,9 +2337,10 @@
           <ul class="nav-links">
             <li><a href="#home">首页</a></li>
             <li><a href="#about">关于我们</a></li>
-            <li><a href="#activities">内培活动</a></li>
             <li><a href="#achievements">会员成就</a></li>
-            <li><a href="#recruitment">招新信息</a></li>
+            <li><a href="#activities">内培活动</a></li>
+            <li><a href="#recruitment">团建活动</a></li>
+            <li><a href="#anniversary">廿载炬燃</a></li>
           </ul>
         </div>
         <div class="nav-right">
@@ -2646,6 +3075,240 @@
     </div>
   </section>
 
+  <!-- 联系我们部分 -->
+  <section id="contact" class="contact-section">
+    <div class="contact-background"></div>
+    <div class="contact-overlay"></div>
+    <div class="contact-container">
+      <!-- 招新流程 -->
+      <div class="contact-part">
+        <div class="part-header">
+          <div class="part-number">6</div>
+          <h2 class="part-title">联系我们 | 加入PG Club</h2>
+        </div>
+        
+        <div class="content-block">
+          <h3>2025年春季招新流程</h3>
+          <p>欢迎优秀的你加入P&G Club大家庭！以下是详细的招新流程和时间安排：</p>
+        </div>
+
+        <!-- 招新流程时间轴 -->
+        <div class="recruitment-timeline">
+          <div class="timeline-item">
+            <div class="timeline-date">
+              <div class="date-box">
+                <span class="month">9月</span>
+                <span class="day">4日</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-icon">🎯</div>
+              <h4>招新启动 + 宣讲会</h4>
+              <p>与优秀师兄师姐近距离交流，参与互动可争取"群面直通车资格"（跳过简历筛选，直接进入群面环节）</p>
+              <div class="timeline-actions">
+                <span class="action-item">关注公众号「PGClub」</span>
+                <span class="action-item">发送关键词"申请"获取资料</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item reverse">
+            <div class="timeline-date">
+              <div class="date-box">
+                <span class="month">9月</span>
+                <span class="day">10日</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-icon">👥</div>
+              <h4>过渡准备期</h4>
+              <p>持续关注公众号动态，准备申请材料，完善个人简历</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">
+              <div class="date-box">
+                <span class="month">9月</span>
+                <span class="day">14日</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-icon">📮</div>
+              <h4>简历投递截止</h4>
+              <p>截止时间：9月14日 12:00前（可通过下方在线申请系统提交）</p>
+              <div class="deadline-warning">
+                <i class="fas fa-exclamation-triangle"></i>
+                <span>请务必在截止时间前完成申请</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="timeline-item reverse">
+            <div class="timeline-date">
+              <div class="date-box">
+                <span class="month">9月</span>
+                <span class="day">16日</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-icon">💡</div>
+              <h4>群面环节</h4>
+              <p>群面试题、解析会通过「PGClub」公众号推送，建议提前关注备考</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-date">
+              <div class="date-box">
+                <span class="month">9月</span>
+                <span class="day">17日</span>
+              </div>
+            </div>
+            <div class="timeline-content">
+              <div class="timeline-icon">🤝</div>
+              <h4>单面环节</h4>
+              <p>与俱乐部资深会员面对面深度沟通，展现个人真实能力、职业规划与价值观</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 在线申请系统 -->
+        <div class="application-system">
+          <div class="system-header">
+            <h3>在线申请系统</h3>
+            <p>请填写完整的申请信息并上传简历，我们将在收到申请后及时与您联系</p>
+          </div>
+
+          <form class="application-form" id="applicationForm">
+            <!-- 个人信息部分 -->
+            <div class="form-section">
+              <h4>个人信息</h4>
+              <div class="form-grid">
+                <div class="form-group">
+                  <label for="name">姓名 *</label>
+                  <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                  <label for="gender">性别 *</label>
+                  <select id="gender" name="gender" required>
+                    <option value="">请选择</option>
+                    <option value="男">男</option>
+                    <option value="女">女</option>
+                  </select>
+                </div>
+                <div class="form-group">
+                  <label for="college">学院 *</label>
+                  <input type="text" id="college" name="college" required>
+                </div>
+                <div class="form-group">
+                  <label for="major">专业 *</label>
+                  <input type="text" id="major" name="major" required>
+                </div>
+                <div class="form-group">
+                  <label for="grade">年级 *</label>
+                  <input type="text" id="grade" name="grade" placeholder="如：2023级" required>
+                </div>
+                <div class="form-group">
+                  <label for="phone">联系电话 *</label>
+                  <input type="tel" id="phone" name="phone" required>
+                </div>
+                <div class="form-group">
+                  <label for="gpa">GPA</label>
+                  <input type="text" id="gpa" name="gpa" placeholder="如：3.8/4.0">
+                </div>
+                <div class="form-group">
+                  <label for="rank">排名</label>
+                  <input type="text" id="rank" name="rank" placeholder="如：5/100">
+                </div>
+                <div class="form-group full-width">
+                  <label for="email">邮箱 *</label>
+                  <input type="email" id="email" name="email" required>
+                </div>
+                <div class="form-group full-width">
+                  <label for="recommendation">是否有会员推荐</label>
+                  <div class="recommendation-group">
+                    <select id="hasRecommendation" name="hasRecommendation">
+                      <option value="否">否</option>
+                      <option value="是">是</option>
+                    </select>
+                    <input type="text" id="recommenderName" name="recommenderName" placeholder="推荐人姓名" style="display: none;">
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- 简历上传部分 -->
+            <div class="form-section">
+              <h4>简历上传（请单独发送至邮箱）</h4>
+              <div class="upload-area" id="resumeUpload">
+                <div class="upload-content">
+                  <i class="fas fa-cloud-upload-alt"></i>
+                  <p>点击上传或拖拽简历文件到此区域</p>
+                  <span class="upload-hint">支持 PDF 格式，文件大小不超过 10MB<br>
+                  <strong style="color: #dc2626;">注意：提交申请后请将简历单独发送至邮箱：2022201031@ruc.edu.cn</strong></span>
+                </div>
+                <input type="file" id="resumeFile" name="resumeFile" accept=".pdf" style="display: none;">
+                <div class="uploaded-file" id="uploadedFile" style="display: none;">
+                  <i class="fas fa-file-pdf"></i>
+                  <span class="file-name"></span>
+                  <button type="button" class="remove-file">×</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- 开放性问题部分 -->
+            <div class="form-section">
+              <h4>开放性问题</h4>
+              
+              <div class="form-group">
+                <label for="question1">1. 请简单介绍自己未来五年规划（包括但不限于学业发展和职业发展），以及你打算如何实现这些规划 *</label>
+                <textarea id="question1" name="question1" maxlength="400" required placeholder="要求：字数不得超过400字，每个问题不超过三点"></textarea>
+                <div class="char-count">0/400</div>
+              </div>
+
+              <div class="form-group">
+                <label for="question2">2. 通过加入人大创投俱乐部你希望能收获什么？如果你加入了创投俱乐部，你可以为俱乐部带来什么？ *</label>
+                <textarea id="question2" name="question2" maxlength="400" required placeholder="要求：字数不得超过400字，每个问题不超过三点"></textarea>
+                <div class="char-count">0/400</div>
+              </div>
+
+              <div class="form-group">
+                <label for="optionalQuestion">选答题（从以下题目中任选一题作答）</label>
+                <select id="questionChoice" name="questionChoice">
+                  <option value="">请选择题目</option>
+                  <option value="3">3. 请描述你目前经历过的最multitask的一段时光，并简要说明你解决这些事情的方法以及最后取得的成果</option>
+                  <option value="4">4. 在你以往的团队协作中，你通常如何定位自己的角色？当团队协作出现冲突时，你的角色将如何解决冲突，请结合自身经历谈一谈</option>
+                  <option value="5">5. 假如你是本次人大创投俱乐部招新宣讲会的负责人，在突出俱乐部特色的同时，希望能尽可能吸引更多的同学参与，你将如何对此次宣讲会进行创新设计呢？</option>
+                </select>
+                <textarea id="optionalQuestion" name="optionalQuestion" maxlength="300" placeholder="要求：字数不超过300字"></textarea>
+                <div class="char-count">0/300</div>
+              </div>
+            </div>
+
+            <!-- 展示材料部分 -->
+            <div class="form-section">
+              <h4>展示材料（可选）</h4>
+              <div class="form-group">
+                <label for="showcase">如果你认为你的优秀不足以通过一纸文字向我们展示，那么不妨用其他的原创展示材料让我们更好地认识你！</label>
+                <textarea id="showcase" name="showcase" placeholder="可以描述你的作品、项目经历、获奖情况等，或提供相关链接"></textarea>
+              </div>
+            </div>
+
+            <!-- 提交按钮 -->
+            <div class="form-submit">
+              <button type="submit" class="submit-btn">
+                <i class="fas fa-paper-plane"></i>
+                提交申请
+              </button>
+              <p class="submit-note">提交前请仔细检查所填信息，我们将在收到申请后尽快与您联系</p>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <script>
     // Navbar scroll effect
     window.addEventListener('scroll', function() {
@@ -2676,6 +3339,229 @@
       const parallax = document.querySelector('.hero-background');
       const speed = scrolled * 0.5;
       parallax.style.transform = `translateY(${speed}px)`;
+    });
+
+    // 联系我们表单功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化 EmailJS
+      emailjs.init('Cvd7hcLaG-n7c5CR1');
+      // 推荐人姓名输入框显示/隐藏
+      const hasRecommendation = document.getElementById('hasRecommendation');
+      const recommenderName = document.getElementById('recommenderName');
+      
+      hasRecommendation.addEventListener('change', function() {
+        if (this.value === '是') {
+          recommenderName.style.display = 'block';
+          recommenderName.required = true;
+        } else {
+          recommenderName.style.display = 'none';
+          recommenderName.required = false;
+          recommenderName.value = '';
+        }
+      });
+
+      // 选答题显示/隐藏
+      const questionChoice = document.getElementById('questionChoice');
+      const optionalQuestion = document.getElementById('optionalQuestion');
+      
+      questionChoice.addEventListener('change', function() {
+        if (this.value) {
+          optionalQuestion.style.display = 'block';
+          optionalQuestion.required = true;
+        } else {
+          optionalQuestion.style.display = 'none';
+          optionalQuestion.required = false;
+          optionalQuestion.value = '';
+        }
+      });
+
+      // 字符计数功能
+      function setupCharCounter(textareaId, maxLength) {
+        const textarea = document.getElementById(textareaId);
+        const counter = textarea.nextElementSibling;
+        
+        textarea.addEventListener('input', function() {
+          const currentLength = this.value.length;
+          counter.textContent = `${currentLength}/${maxLength}`;
+          
+          if (currentLength > maxLength * 0.9) {
+            counter.style.color = '#dc2626';
+          } else if (currentLength > maxLength * 0.8) {
+            counter.style.color = '#f59e0b';
+          } else {
+            counter.style.color = '#6b7280';
+          }
+        });
+      }
+
+      setupCharCounter('question1', 400);
+      setupCharCounter('question2', 400);
+      setupCharCounter('optionalQuestion', 300);
+
+      // 文件上传功能
+      const uploadArea = document.getElementById('resumeUpload');
+      const fileInput = document.getElementById('resumeFile');
+      const uploadContent = uploadArea.querySelector('.upload-content');
+      const uploadedFile = document.getElementById('uploadedFile');
+      
+      // 点击上传
+      uploadArea.addEventListener('click', function() {
+        fileInput.click();
+      });
+
+      // 文件选择
+      fileInput.addEventListener('change', function() {
+        handleFileUpload(this.files[0]);
+      });
+
+      // 拖拽上传
+      uploadArea.addEventListener('dragover', function(e) {
+        e.preventDefault();
+        this.classList.add('dragover');
+      });
+
+      uploadArea.addEventListener('dragleave', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+      });
+
+      uploadArea.addEventListener('drop', function(e) {
+        e.preventDefault();
+        this.classList.remove('dragover');
+        const files = e.dataTransfer.files;
+        if (files.length > 0) {
+          handleFileUpload(files[0]);
+        }
+      });
+
+      // 处理文件上传
+      function handleFileUpload(file) {
+        if (!file) return;
+        
+        // 验证文件类型
+        if (file.type !== 'application/pdf') {
+          alert('请上传PDF格式的文件');
+          return;
+        }
+        
+        // 验证文件大小
+        if (file.size > 10 * 1024 * 1024) {
+          alert('文件大小不能超过10MB');
+          return;
+        }
+        
+        // 显示上传的文件
+        uploadContent.style.display = 'none';
+        uploadedFile.style.display = 'flex';
+        uploadedFile.querySelector('.file-name').textContent = file.name;
+      }
+
+      // 删除文件
+      document.querySelector('.remove-file').addEventListener('click', function(e) {
+        e.stopPropagation();
+        fileInput.value = '';
+        uploadContent.style.display = 'block';
+        uploadedFile.style.display = 'none';
+      });
+
+      // 表单提交
+      const applicationForm = document.getElementById('applicationForm');
+      const submitBtn = document.querySelector('.submit-btn');
+      
+      applicationForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        // 禁用提交按钮
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> 提交中...';
+        
+        // 收集表单数据
+        const formData = new FormData(this);
+        
+        // 验证必填字段
+        const requiredFields = this.querySelectorAll('[required]');
+        let isValid = true;
+        
+        requiredFields.forEach(field => {
+          if (!field.value.trim()) {
+            isValid = false;
+            field.style.borderColor = '#dc2626';
+          } else {
+            field.style.borderColor = '#e5e7eb';
+          }
+        });
+        
+        // 简历文件提醒（非必须，因为需要单独发邮件）
+        if (!fileInput.files[0]) {
+          // 不再阻止提交，只是重置边框颜色
+          uploadArea.style.borderColor = '#d1d5db';
+        } else {
+          uploadArea.style.borderColor = '#d1d5db';
+        }
+        
+        if (!isValid) {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交申请';
+          alert('请完善所有必填信息');
+          return;
+        }
+        
+        // 收集所有表单数据
+        const templateParams = {
+          name: formData.get('name'),
+          gender: formData.get('gender'),
+          college: formData.get('college'),
+          major: formData.get('major'),
+          grade: formData.get('grade'),
+          phone: formData.get('phone'),
+          email: formData.get('email'),
+          gpa: formData.get('gpa') || '未填写',
+          rank: formData.get('rank') || '未填写',
+          hasRecommendation: formData.get('hasRecommendation'),
+          recommenderName: formData.get('recommenderName') || '无',
+          question1: formData.get('question1'),
+          question2: formData.get('question2'),
+          questionChoice: formData.get('questionChoice') || '未选择',
+          optionalQuestion: formData.get('optionalQuestion') || '未作答',
+          showcase: formData.get('showcase') || '无',
+          submitTime: new Date().toLocaleString('zh-CN')
+        };
+
+        // 发送邮件
+        emailjs.send('service_dcipgx2', 'template_9mnh6co', templateParams)
+          .then(function(response) {
+            console.log('SUCCESS!', response.status, response.text);
+            alert('申请已成功提交！我们将在收到申请后尽快与您联系。\n\n温馨提示：如您上传了简历，请同时发送至邮箱：2022201031@ruc.edu.cn');
+            
+            // 重置表单
+            applicationForm.reset();
+            uploadContent.style.display = 'block';
+            uploadedFile.style.display = 'none';
+            recommenderName.style.display = 'none';
+            optionalQuestion.style.display = 'none';
+            
+            // 重置字符计数
+            document.querySelectorAll('.char-count').forEach(counter => {
+              counter.textContent = counter.textContent.replace(/\d+/, '0');
+              counter.style.color = '#6b7280';
+            });
+            
+            // 恢复提交按钮
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交申请';
+            
+            // 跳转到页面顶部
+            document.getElementById('home').scrollIntoView({ behavior: 'smooth' });
+          })
+          .catch(function(error) {
+            console.log('FAILED...', error);
+            alert('提交失败，请稍后重试或直接发送邮件至：2022201031@ruc.edu.cn');
+            
+            // 恢复提交按钮
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<i class="fas fa-paper-plane"></i> 提交申请';
+          });
+      });
     });
   </script>
 </body>
