@@ -358,7 +358,7 @@
       left: 20px;
       right: 20px;
       max-height: 0;
-      background: rgba(255, 255, 255, 0.15);
+      background: rgba(0, 0, 0, 0.8);
       backdrop-filter: blur(20px);
       -webkit-backdrop-filter: blur(20px);
       border: 1px solid rgba(255, 255, 255, 0.2);
@@ -368,7 +368,7 @@
       transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
       transform: translateY(-20px);
       opacity: 0;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
     }
 
     .mobile-menu.active {
@@ -379,39 +379,19 @@
     }
 
     .navbar.scrolled ~ .mobile-menu {
-      background: rgba(255, 255, 255, 0.9);
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar.scrolled ~ .mobile-menu .mobile-nav-links a {
-      color: rgba(0, 0, 0, 0.8);
-      border-color: rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar.scrolled ~ .mobile-menu .mobile-nav-links a:hover {
-      background: rgba(0, 0, 0, 0.1);
-      color: rgba(0, 0, 0, 0.9);
-    }
-
-    .navbar.scrolled ~ .mobile-menu .mobile-menu-close {
-      color: rgba(0, 0, 0, 0.7);
-      background: rgba(0, 0, 0, 0.1);
-    }
-
-    .navbar.scrolled ~ .mobile-menu .mobile-contact-btn {
-      background: linear-gradient(135deg, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0.15) 100%);
-      color: rgba(0, 0, 0, 0.8);
-      border-color: rgba(0, 0, 0, 0.2);
+      background: rgba(0, 0, 0, 0.85);
+      border-color: rgba(255, 255, 255, 0.1);
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
     }
 
     .mobile-menu-close {
       position: absolute;
       top: 15px;
       right: 15px;
-      background: rgba(255, 255, 255, 0.2);
-      border: none;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       font-size: 1.2rem;
-      color: rgba(255, 255, 255, 0.8);
+      color: rgba(255, 255, 255, 0.9);
       cursor: pointer;
       padding: 8px;
       border-radius: 50%;
@@ -423,11 +403,14 @@
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .mobile-menu-close:hover {
-      background: rgba(255, 255, 255, 0.3);
+      background: rgba(255, 255, 255, 0.25);
+      border-color: rgba(255, 255, 255, 0.4);
       transform: scale(1.1);
+      color: white;
     }
 
     .mobile-nav-links {
@@ -465,7 +448,7 @@
     .mobile-menu.active .mobile-nav-links li:nth-child(6) { transition-delay: 0.35s; }
 
     .mobile-nav-links a {
-      color: rgba(255, 255, 255, 0.9);
+      color: rgba(255, 255, 255, 0.95);
       text-decoration: none;
       font-size: 1.1rem;
       font-weight: 400;
@@ -475,32 +458,37 @@
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: rgba(255, 255, 255, 0.05);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     }
 
     .mobile-nav-links a:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: rgba(255, 255, 255, 0.15);
       color: white;
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      border-color: rgba(255, 255, 255, 0.3);
     }
 
     .mobile-contact-btn {
       display: block;
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, rgba(255, 255, 255, 0.3) 100%);
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
       color: white;
       text-decoration: none;
       padding: 12px 30px;
       border-radius: 25px;
-      font-weight: 500;
+      font-weight: 600;
       text-align: center;
       margin-top: 20px;
       transition: all 0.3s ease;
       backdrop-filter: blur(10px);
       -webkit-backdrop-filter: blur(10px);
-      border: 1px solid rgba(255, 255, 255, 0.3);
+      border: 1px solid rgba(255, 255, 255, 0.2);
       opacity: 0;
       transform: translateY(20px);
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
     }
 
     .mobile-menu.active .mobile-contact-btn {
@@ -510,9 +498,9 @@
     }
 
     .mobile-contact-btn:hover {
-      background: linear-gradient(135deg, rgba(255, 255, 255, 0.3) 0%, rgba(255, 255, 255, 0.4) 100%);
+      background: linear-gradient(135deg, #5855eb 0%, #7c3aed 100%);
       transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(255, 255, 255, 0.2);
+      box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
     }
 
     @media (max-width: 768px) {
@@ -3604,10 +3592,15 @@
       const mobileMenu = document.getElementById('mobileMenu');
       const mobileMenuClose = document.getElementById('mobileMenuClose');
 
-      // 打开菜单
+      // 切换菜单
       mobileMenuBtn.addEventListener('click', function() {
-        mobileMenu.classList.add('active');
-        document.body.style.overflow = 'hidden'; // 防止滚动
+        if (mobileMenu.classList.contains('active')) {
+          mobileMenu.classList.remove('active');
+          document.body.style.overflow = ''; // 恢复滚动
+        } else {
+          mobileMenu.classList.add('active');
+          document.body.style.overflow = 'hidden'; // 防止滚动
+        }
       });
 
       // 关闭菜单
