@@ -7,6 +7,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;700&family=Montserrat:wght@300;600;700&family=Bebas+Neue&family=Oswald:wght@300;500;700&family=Avenir:wght@300;400;700;900&display=swap" rel="stylesheet">
   <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/echarts/map/js/world.js"></script>
   <style>
     * {
       margin: 0;
@@ -938,6 +940,730 @@
       color: #334155;
       margin: 0;
       font-family: 'Roboto', sans-serif;
+    }
+
+    /* 数据可视化样式 */
+    .data-visualization-container {
+      margin-top: 50px;
+    }
+
+    .stats-cards {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px;
+      margin-bottom: 40px;
+    }
+
+    .stat-card {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      border-radius: 20px;
+      padding: 30px 25px;
+      text-align: center;
+      transition: all 0.4s ease;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+      transform: rotate(45deg);
+      transition: all 0.6s ease;
+      opacity: 0;
+    }
+
+    .stat-card:hover::before {
+      opacity: 1;
+      animation: shimmer 1.5s ease-in-out;
+    }
+
+    @keyframes shimmer {
+      0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+    }
+
+    .stat-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.8) 100%);
+    }
+
+    .stat-icon {
+      font-size: 3rem;
+      margin-bottom: 15px;
+      display: block;
+    }
+
+    .stat-number {
+      font-size: 2.5rem;
+      font-weight: 700;
+      color: #6366f1;
+      margin-bottom: 8px;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .stat-label {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .stat-sublabel {
+      font-size: 0.9rem;
+      color: #64748b;
+    }
+
+    .chart-tabs {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      padding: 12px 24px;
+      border: none;
+      background: rgba(255, 255, 255, 0.3);
+      color: #64748b;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      font-weight: 500;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .tab-btn:hover {
+      background: rgba(255, 255, 255, 0.5);
+      color: #475569;
+      transform: translateY(-2px);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+      color: white;
+      box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+    }
+
+    .charts-container {
+      position: relative;
+      min-height: 500px;
+    }
+
+    .chart-panel {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.4s ease;
+      transform: translateY(20px);
+    }
+
+    .chart-panel.active {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+      position: relative;
+    }
+
+    .chart-header {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .chart-header h4 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 10px;
+    }
+
+    .chart-header p {
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .chart-wrapper {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      padding: 30px;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .chart-content {
+      width: 100%;
+      height: 400px;
+      position: relative;
+    }
+
+    /* 学校卡片样式 */
+    .schools-grid {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 25px;
+      margin-top: 20px;
+    }
+
+    .school-card {
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.9) 0%, rgba(255, 255, 255, 0.7) 100%);
+      border-radius: 20px;
+      padding: 25px;
+      cursor: pointer;
+      transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      border: 2px solid transparent;
+      position: relative;
+      overflow: hidden;
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      flex: 0 0 320px; /* 设置固定宽度，不允许伸缩 */
+      display: flex;
+      flex-direction: column;
+    }
+
+    .school-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--school-color);
+      transition: height 0.3s ease;
+    }
+
+    .school-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+      border-color: var(--school-color);
+    }
+
+    .school-card:hover::before {
+      height: 100%;
+      opacity: 0.05;
+    }
+
+    .school-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      margin-bottom: 20px;
+    }
+
+    .school-logo {
+      width: 60px;
+      height: 60px;
+      object-fit: contain;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.8);
+      padding: 8px;
+      transition: transform 0.3s ease;
+    }
+
+    .school-card:hover .school-logo {
+      transform: scale(1.1);
+    }
+
+    .school-info h4 {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .school-offers {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--school-color);
+      margin-bottom: 15px;
+    }
+
+    .highlight-programs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .program-tag {
+      background: linear-gradient(135deg, var(--school-color) 0%, rgba(var(--school-color-rgb), 0.8) 100%);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .view-details {
+      color: var(--school-color);
+      font-size: 0.9rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      margin-top: auto; /* 将查看详情按钮推到底部 */
+    }
+
+    .view-details::after {
+      content: '→';
+      transition: transform 0.3s ease;
+    }
+
+    .school-card:hover .view-details::after {
+      transform: translateX(5px);
+    }
+
+    /* 弹窗样式 */
+    .program-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 10000;
+      display: none;
+    }
+
+    .program-modal.active {
+      display: block;
+    }
+
+    .modal-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .modal-content {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(145deg, rgba(255, 255, 255, 0.95) 0%, rgba(255, 255, 255, 0.9) 100%);
+      border-radius: 25px;
+      max-width: 600px;
+      width: 90%;
+      max-height: 80vh;
+      overflow: hidden;
+      animation: slideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+      from { 
+        opacity: 0;
+        transform: translate(-50%, -30%) scale(0.9);
+      }
+      to { 
+        opacity: 1;
+        transform: translate(-50%, -50%) scale(1);
+      }
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      padding: 30px;
+      border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+      background: linear-gradient(135deg, rgba(var(--school-color-rgb), 0.1) 0%, rgba(255, 255, 255, 0.1) 100%);
+    }
+
+    .modal-school-logo {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      border-radius: 15px;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px;
+    }
+
+    .modal-school-info h3 {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 5px;
+    }
+
+    .modal-school-info p {
+      color: #64748b;
+      font-size: 1rem;
+    }
+
+    .modal-close {
+      margin-left: auto;
+      background: none;
+      border: none;
+      font-size: 2rem;
+      color: #64748b;
+      cursor: pointer;
+      padding: 10px;
+      border-radius: 50%;
+      transition: all 0.3s ease;
+    }
+
+    .modal-close:hover {
+      background: rgba(0, 0, 0, 0.1);
+      color: #1e293b;
+    }
+
+    .modal-body {
+      padding: 30px;
+      max-height: 50vh;
+      overflow-y: auto;
+    }
+
+    .programs-list {
+      display: grid;
+      gap: 15px;
+    }
+
+    .program-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      background: rgba(255, 255, 255, 0.6);
+      border-radius: 15px;
+      border-left: 4px solid var(--school-color);
+      transition: all 0.3s ease;
+    }
+
+    .program-item:hover {
+      background: rgba(255, 255, 255, 0.8);
+      transform: translateX(5px);
+    }
+
+    .program-info h5 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      color: #1e293b;
+      margin-bottom: 3px;
+    }
+
+    .program-info p {
+      font-size: 0.9rem;
+      color: #64748b;
+      margin: 0;
+    }
+
+    .program-count {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .count-badge {
+      background: var(--school-color);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-weight: 600;
+      font-size: 0.9rem;
+    }
+
+    .type-badge {
+      padding: 4px 8px;
+      border-radius: 10px;
+      font-size: 0.7rem;
+      font-weight: 500;
+      text-transform: uppercase;
+    }
+
+    .type-badge.master {
+      background: #e0f2fe;
+      color: #0277bd;
+    }
+
+    .type-badge.phd {
+      background: #f3e5f5;
+      color: #7b1fa2;
+    }
+
+    /* Logo墙样式 */
+    .logo-wall-container {
+      margin-top: 30px;
+    }
+
+    .logo-category {
+      margin-bottom: 40px;
+    }
+
+    .category-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: #334155;
+      margin-bottom: 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid rgba(99, 102, 241, 0.2);
+    }
+
+    .logo-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+      gap: 25px;
+    }
+
+    .logo-item {
+      position: relative;
+      background: #fff;
+      border-radius: 15px;
+      padding: 20px;
+      height: 100px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .logo-item:hover {
+      transform: translateY(-8px) scale(1.05);
+      box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+      z-index: 10;
+    }
+
+    .logo-item img {
+      max-width: 100%;
+      max-height: 50px;
+      object-fit: contain;
+      filter: grayscale(100%);
+      transition: all 0.3s ease;
+    }
+
+    .logo-item:hover img {
+      filter: grayscale(0%);
+    }
+
+    .logo-tooltip {
+      position: absolute;
+      bottom: 110%;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #333;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 8px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+    }
+
+    .logo-tooltip::after {
+      content: '';
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      margin-left: -5px;
+      border-width: 5px;
+      border-style: solid;
+      border-color: #333 transparent transparent transparent;
+    }
+
+    .logo-item:hover .logo-tooltip {
+      opacity: 1;
+      visibility: visible;
+      transform: translateX(-50%) translateY(-5px);
+    }
+    
+    .logo-item.no-logo::after {
+      content: attr(data-company-name);
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: #334155;
+      text-align: center;
+    }
+    
+    .logo-item.no-logo img {
+      display: none;
+    }
+
+    /* 新的荣誉奖项展示样式 */
+    .awards-showcase-container {
+      margin-top: 40px;
+    }
+
+    .award-category {
+      display: flex;
+      gap: 30px;
+      margin-bottom: 30px;
+      position: relative;
+      padding-left: 150px;
+      min-height: 100px;
+    }
+
+    .category-label {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 120px;
+      text-align: right;
+      writing-mode: horizontal-tb;
+      transform-origin: center;
+      font-size: 1.2rem;
+      font-weight: 600;
+      color: #334155;
+      padding-right: 20px;
+      border-right: 3px solid #6366f1;
+    }
+    
+    .category-label h3 {
+      position: sticky;
+      top: 150px; /* 粘性定位 */
+    }
+
+    .awards-list {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .award-item-card {
+      background: rgba(255, 255, 255, 0.8);
+      border-radius: 12px;
+      padding: 20px 25px;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+      transition: all 0.3s ease;
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+    
+    .award-item-card:hover {
+      transform: translateX(10px);
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .award-item-card p {
+      margin: 0;
+      color: #475569;
+      line-height: 1.6;
+    }
+
+    .award-item-card.with-logo img {
+      width: 50px;
+      height: 50px;
+      object-fit: contain;
+      border-radius: 8px;
+    }
+
+    .award-details span {
+      font-size: 0.85rem;
+      color: #64748b;
+      display: block;
+      margin-top: 5px;
+    }
+
+    @media (max-width: 768px) {
+      .award-category {
+        flex-direction: column;
+        padding-left: 0;
+        gap: 15px;
+      }
+      .category-label {
+        position: static;
+        width: auto;
+        text-align: left;
+        border-right: none;
+        border-bottom: 3px solid #6366f1;
+        padding-bottom: 10px;
+        margin-bottom: 15px;
+      }
+      .category-label h3 {
+        position: static;
+      }
+    }
+
+    /* 响应式设计 - 数据可视化 */
+    @media (max-width: 768px) {
+      .stats-cards {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+      }
+
+      .stat-card {
+        padding: 20px 15px;
+      }
+
+      .stat-number {
+        font-size: 2rem;
+      }
+
+      .chart-tabs {
+        gap: 5px;
+      }
+
+      .tab-btn {
+        padding: 10px 16px;
+        font-size: 0.9rem;
+      }
+
+      .chart-wrapper {
+        padding: 20px;
+      }
+
+      .chart-content {
+        height: 300px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .stats-cards {
+        grid-template-columns: 1fr;
+      }
+      
+      .schools-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .modal-content {
+        width: 95%;
+        max-height: 85vh;
+      }
+      
+      .modal-header {
+        padding: 20px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .modal-body {
+        padding: 20px;
+      }
     }
 
     @media (max-width: 768px) {
@@ -2718,87 +3444,217 @@
           <h2 class="part-title">星曜廿年，荣光可期 | 会员成就</h2>
         </div>
         
+        <!-- 数据可视化部分 -->
         <div class="content-block">
-          <h3>2017-2020级会员全职去向</h3>
-          <p>俱乐部近年毕业的会员就业去向遍布不同领域的头部企业。</p>
-          <p>历史上，会员们也获得大量在不同领域头部企业的任职机会。</p>
+          <h3>成就数据一览</h3>
+          <p>通过动态图表展示俱乐部会员在各个领域的具体成就数据</p>
         </div>
 
-        <div class="career-grid">
-          <div class="career-item">
-            <div class="career-icon">🏦</div>
-            <div class="career-content">
-              <h4>投行</h4>
-              <p>斩获数枚"全球八大投行"offer，包括 Morgan Stanley、Citi、UBS等，以及"三中一华"等头部内资券商。</p>
+        <!-- 数据可视化容器 -->
+        <div class="data-visualization-container">
+          <!-- 顶部数据卡片 -->
+          <div class="stats-cards">
+            <div class="stat-card">
+              <div class="stat-icon">🎓</div>
+              <div class="stat-number" data-target="60">0</div>
+              <div class="stat-label">保研Offer</div>
+              <div class="stat-sublabel">2020-2021级</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🌍</div>
+              <div class="stat-number" data-target="25">0</div>
+              <div class="stat-label">留学Offer</div>
+              <div class="stat-sublabel">2018-2020级</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">💼</div>
+              <div class="stat-number" data-target="170">0</div>
+              <div class="stat-label">实习Offer</div>
+              <div class="stat-sublabel">2020-2023级</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-icon">🏆</div>
+              <div class="stat-number" data-target="15">0</div>
+              <div class="stat-label">顶级竞赛奖项</div>
+              <div class="stat-sublabel">2019-2022级</div>
             </div>
           </div>
-          <div class="career-item">
-            <div class="career-icon">💰</div>
-            <div class="career-content">
-              <h4>投资</h4>
-              <p>斩获顶级PE/VC全职offer，如中投公司、软银、淡马锡、IDG、深创投、达晨创投、红杉中国、君联资本等；头部公募/资管也多有分布，如易方达、工银瑞信、泰康资产等。</p>
-            </div>
-          </div>
-          <div class="career-item">
-            <div class="career-icon">📊</div>
-            <div class="career-content">
-              <h4>咨询/战略</h4>
-              <p>斩获MBB和互联网战略部门offer，包括麦肯锡、贝恩等以及腾讯、字节等公司的战略、战投部门。</p>
-            </div>
-          </div>
-          <div class="career-item">
-            <div class="career-icon">💻</div>
-            <div class="career-content">
-              <h4>互联网/科技公司</h4>
-              <p>斩获国内外top互联网大厂offer，涵盖Microsoft、Google等国际互联网巨头与腾讯、美团、字节、百度等国内大厂的核心岗位。</p>
-            </div>
-          </div>
-        </div>
 
-        <div class="achievement-summary">
-          <p>正是一届又一届老会员多样化且高质量的就业去向，使俱乐部拥有强大的人脉网络和丰富的会员资源。</p>
-        </div>
-
-        <div class="content-block">
-          <h3>2020-2023级会员实习Offer情况统计</h3>
-          <p>俱乐部2020-2023级在校会员约60人，在咨询/PEVC/公募/券商投行/FA/互联网等多个领域完成了超过170份高质量实习，人均实习超过3次。</p>
-          <p>俱乐部会员创造并积累了大量继任/内推机会，许多会员在俱乐部的帮助下获得了第一份高质量实习。</p>
-        </div>
-
-        <div class="content-block">
-          <h3>国内/国际深造</h3>
-          <div class="education-grid">
-            <div class="education-item">
-              <h4>保研</h4>
-              <p>俱乐部20-21级斩获60多枚保研offer，涵盖金融/管理/经济等专业专硕与直博的top offer。其中，俱乐部2021级18名会员共收获保研offer35枚，其中清北复交外保offer26枚。</p>
-            </div>
-            <div class="education-item">
-              <h4>出国</h4>
-              <p>俱乐部18-20级选择出国的会员收获麻省理工、耶鲁、剑桥等海外顶级高校offer 25余枚。</p>
-            </div>
+          <!-- 图表切换选项卡 -->
+          <div class="chart-tabs">
+            <button class="tab-btn active" data-chart="graduate">保研深造</button>
+            <button class="tab-btn" data-chart="abroad">留学分布</button>
+            <button class="tab-btn" data-chart="internship">实习去向</button>
+            <button class="tab-btn" data-chart="fulltime">全职去向</button>
+            <button class="tab-btn" data-chart="awards">荣誉奖项</button>
           </div>
-        </div>
 
-        <div class="content-block">
-          <h3>荣誉奖项</h3>
-          <div class="awards-grid">
-            <div class="award-item">
-              <div class="award-icon">🏆</div>
-              <div class="award-content">
-                <h4>奖学金</h4>
-                <p>据不完全统计，俱乐部在校会员在近三年的奖学金评选中，以优异的学习成绩多次斩获国家奖学金，特等奖学金等。</p>
+          <!-- 图表容器 -->
+          <div class="charts-container">
+            <!-- 保研数据图表 -->
+            <div class="chart-panel active" id="graduate-chart">
+              <div class="chart-header">
+                <h4>2020-2021级保研去向分析</h4>
+                <p>共获得60+枚保研offer，覆盖清北复交人等顶尖高校</p>
+              </div>
+              
+              <!-- 学校卡片展示 -->
+              <div class="schools-grid" id="schoolsGrid">
+                <!-- 动态生成学校卡片 -->
+              </div>
+              
+              <!-- 详细项目弹窗 -->
+              <div class="program-modal" id="programModal">
+                <div class="modal-overlay" id="modalOverlay"></div>
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <img class="modal-school-logo" id="modalSchoolLogo" src="" alt="">
+                    <div class="modal-school-info">
+                      <h3 id="modalSchoolName"></h3>
+                      <p id="modalSchoolOffers"></p>
+                    </div>
+                    <button class="modal-close" id="modalClose">×</button>
+                  </div>
+                  <div class="modal-body">
+                    <div class="programs-list" id="programsList">
+                      <!-- 动态生成项目列表 -->
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
-            <div class="award-item">
-              <div class="award-icon">🎯</div>
-              <div class="award-content">
-                <h4>商赛</h4>
-                <p>俱乐部为会员们搭建了天然的寻找可靠队友的平台，并有经验丰富的前辈提供全方位的指导，良性的循环使得俱乐部在各类竞赛中均取得亮眼表现。</p>
+
+            <!-- 留学数据图表 -->
+            <div class="chart-panel" id="abroad-chart">
+              <div class="chart-header">
+                <h4>2018-2020级留学分布</h4>
+                <p>25+枚顶级海外高校offer，覆盖哈佛、耶鲁、剑桥等</p>
+              </div>
+              <div class="chart-wrapper">
+                <div class="chart-content" id="abroadChart"></div>
               </div>
             </div>
-          </div>
-          <div class="competition-highlights">
-            <p>近三年内，在清北复交等顶尖高校举办的高含金量赛事中，俱乐部会员共获得光华案例分析大赛（金融分析组）冠军、清华大学"今经乐道"经济热点分析大赛全国二十强、上交高金峰会冠军、复旦"石锋资产杯"行业研究投资大赛全国亚军等荣誉；在数学建模类竞赛中，俱乐部会员获得美赛O奖、国赛全国一等奖等优异成绩；俱乐部会员还斩获了"尖峰时刻"全国商业模拟大赛一等奖、"万事达卡"案例咨询大赛季军、"贝恩杯"优秀案例、中国日报社"21世纪杯"全国英语演讲比赛大学组北京赛区冠军和中国大学生英语辩论赛全国总决赛亚军等荣誉。</p>
+
+            <!-- 实习数据图表 -->
+            <div class="chart-panel" id="internship-chart">
+              <div class="chart-header">
+                <h4>2020-2023级实习分布</h4>
+                <p>170+份高质量实习，覆盖PE/VC、投行、咨询、科技等领域</p>
+              </div>
+              <div class="logo-wall-container" id="internshipLogoWall">
+                <!-- 动态生成Logo墙 -->
+              </div>
+            </div>
+
+            <!-- 全职数据图表 -->
+            <div class="chart-panel" id="fulltime-chart">
+              <div class="chart-header">
+                <h4>2017-2020级全职去向</h4>
+                <p>分布在投行、PE/VC、咨询、科技等头部企业</p>
+              </div>
+              <div class="logo-wall-container" id="fulltimeLogoWall">
+                <!-- 动态生成Logo墙 -->
+              </div>
+            </div>
+            
+            <!-- 荣誉奖项展示 -->
+            <div class="chart-panel" id="awards-chart">
+              <div class="chart-header">
+                <h4>会员荣誉奖项</h4>
+                <p>俱乐部会员在各类竞赛、科研活动中表现优异，斩获多项国家级和国际级荣誉。</p>
+              </div>
+              <div class="awards-showcase-container">
+                <div class="award-category">
+                  <div class="category-label">
+                    <h3>奖学金</h3>
+                  </div>
+                  <div class="awards-list">
+                    <div class="award-item-card">
+                      <p>国家奖学金</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>学习优秀特等奖学金</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>中国工商银行融合创新优秀奖学金兼 “融创之星” 荣誉称号</p>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="award-category">
+                  <div class="category-label">
+                    <h3>各类竞赛</h3>
+                  </div>
+                  <div class="awards-list">
+                    <div class="award-item-card with-logo">
+                      <img src="pic/logo/pku.svg.png" alt="北京大学">
+                      <div class="award-details">
+                        <p><strong>北大光华案例分析大赛冠军</strong></p>
+                        <span>（队伍全员均为俱乐部会员）</span>
+                      </div>
+                    </div>
+                    <div class="award-item-card with-logo">
+                      <img src="pic/logo/thu.png" alt="清华大学">
+                      <div class="award-details">
+                        <p><strong>清华大学经管学院 “今经乐道” 经济热点分析大赛</strong></p>
+                        <span>全国二十强、主赛区优秀报告奖（队伍全员均为俱乐部会员）</span>
+                      </div>
+                    </div>
+                    <div class="award-item-card with-logo">
+                      <img src="pic/logo/fdu.png" alt="复旦大学">
+                      <div class="award-details">
+                        <p><strong>复旦大学管理学院 “石锋资产杯” 行业研究投资大赛</strong></p>
+                        <span>金牛奖银奖 - 全国亚军（队伍全员均为俱乐部会员）</span>
+                      </div>
+                    </div>
+                    <div class="award-item-card with-logo">
+                      <img src="pic/logo/sjtu.png" alt="上海交通大学">
+                      <div class="award-details">
+                        <p><strong>上海交通大学高金峰会冠军</strong></p>
+                      </div>
+                    </div>
+                    <div class="award-item-card">
+                      <p>“尖峰时刻” 全国商业模拟大赛一等奖</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>“万事达卡” 案例咨询大赛季军</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>“贝恩杯” 优秀案例</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>美赛 O 奖 (COMAP Scholarship Award)</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>中国日报社 “21 世纪杯” 全国英语演讲比赛大学组北京赛区冠军</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>中国大学生英语辩论赛全国总决赛亚军</p>
+                    </div>
+                  </div>
+                </div>
+      
+                <div class="award-category">
+                  <div class="category-label">
+                    <h3>科研</h3>
+                  </div>
+                  <div class="awards-list">
+                    <div class="award-item-card">
+                      <p>中国-东盟峰会 Best Position Paper Award</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>全国高校本科生经济学年会一等奖</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>“经世学者” 论坛最佳论文奖</p>
+                    </div>
+                    <div class="award-item-card">
+                      <p>人大商学院本科学生学术论坛一等奖</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -3621,6 +4477,775 @@
           document.body.style.overflow = '';
         }
       });
+    });
+
+    // 数据可视化功能
+    document.addEventListener('DOMContentLoaded', function() {
+      // 数字动画效果
+      function animateNumber(element, target, duration = 2000) {
+        const start = 0;
+        const increment = target / (duration / 16);
+        let current = start;
+        
+        const timer = setInterval(() => {
+          current += increment;
+          if (current >= target) {
+            current = target;
+            clearInterval(timer);
+          }
+          element.textContent = Math.floor(current);
+        }, 16);
+      }
+
+      // 观察者模式 - 当数据卡片进入视口时触发动画
+      const observerOptions = {
+        threshold: 0.1,
+        rootMargin: '0px 0px -50px 0px'
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            const numberElement = entry.target.querySelector('.stat-number');
+            const target = parseInt(numberElement.getAttribute('data-target'));
+            animateNumber(numberElement, target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, observerOptions);
+
+      // 观察所有数据卡片
+      document.querySelectorAll('.stat-card').forEach(card => {
+        observer.observe(card);
+      });
+
+      // 图表切换功能
+      const tabButtons = document.querySelectorAll('.tab-btn');
+      const chartPanels = document.querySelectorAll('.chart-panel');
+
+      tabButtons.forEach(button => {
+        button.addEventListener('click', () => {
+          const chartType = button.getAttribute('data-chart');
+          
+          // 更新按钮状态
+          tabButtons.forEach(btn => btn.classList.remove('active'));
+          button.classList.add('active');
+          
+          // 更新图表显示
+          chartPanels.forEach(panel => panel.classList.remove('active'));
+          document.getElementById(chartType + '-chart').classList.add('active');
+          
+          // 根据类型渲染对应图表
+          setTimeout(() => {
+            renderChart(chartType);
+          }, 200);
+        });
+      });
+
+      // 加载成就数据
+      const achievementsData = {
+        "graduateOffers": {
+          "2020-2021": {
+            "total": 60,
+            "schools": {
+              "北大": {
+                "name": "北京大学",
+                "logo": "pic/logo/pku.svg.png",
+                "totalOffers": 8,
+                "color": "#8B0000",
+                "programs": [
+                  { "name": "光华MFin", "fullName": "光华管理学院金融硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "光华BA", "fullName": "光华管理学院商务分析", "count": 1, "type": "master", "highlight": false },
+                  { "name": "汇丰经济双硕士", "fullName": "汇丰商学院经济双硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "汇丰金融硕士", "fullName": "汇丰商学院金融硕士(数量金融方向)", "count": 1, "type": "master", "highlight": false },
+                  { "name": "光华会计学直博", "fullName": "光华管理学院会计学直博", "count": 1, "type": "phd", "highlight": false },
+                  { "name": "经院金融学直博", "fullName": "经济学院金融学直博", "count": 1, "type": "phd", "highlight": false }
+                ]
+              },
+              "清华": {
+                "name": "清华大学",
+                "logo": "pic/logo/thu.png",
+                "totalOffers": 7,
+                "color": "#722F37",
+                "programs": [
+                  { "name": "经管MiM", "fullName": "经管学院管理学硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "经管MoF", "fullName": "经管学院金融学硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "哥大商务分析双硕士", "fullName": "清华-哥大商务分析双硕士", "count": 1, "type": "master", "highlight": false },
+                  { "name": "五道口金融专硕", "fullName": "五道口金融学院金融专硕", "count": 1, "type": "master", "highlight": false },
+                  { "name": "苏世民学者", "fullName": "苏世民书院学者项目", "count": 1, "type": "master", "highlight": false }
+                ]
+              },
+              "复旦": {
+                "name": "复旦大学",
+                "logo": "pic/logo/fdu.png",
+                "totalOffers": 11,
+                "color": "#0066CC",
+                "programs": [
+                  { "name": "管院GMiM", "fullName": "管理学院全球管理硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "管院DDiM", "fullName": "管理学院数字化与数据管理硕士", "count": 2, "type": "master", "highlight": true },
+                  { "name": "管院DSBA", "fullName": "管理学院数据科学与商业分析", "count": 2, "type": "master", "highlight": true },
+                  { "name": "管院GMiF", "fullName": "管理学院全球金融硕士", "count": 1, "type": "master", "highlight": false },
+                  { "name": "管院MFE", "fullName": "管理学院金融工程硕士", "count": 1, "type": "master", "highlight": false },
+                  { "name": "管院MIF", "fullName": "管理学院国际金融硕士", "count": 1, "type": "master", "highlight": false },
+                  { "name": "国金EMF", "fullName": "国际金融学院能源金融硕士", "count": 2, "type": "master", "highlight": true }
+                ]
+              },
+              "上交": {
+                "name": "上海交通大学",
+                "logo": "pic/logo/sjtu.png",
+                "totalOffers": 4,
+                "color": "#C8102E",
+                "programs": [
+                  { "name": "高金MF(Fintech)", "fullName": "高级金融学院金融硕士(金融科技)", "count": 2, "type": "master", "highlight": true },
+                  { "name": "高金MF(General)", "fullName": "高级金融学院金融硕士(综合)", "count": 1, "type": "master", "highlight": false },
+                  { "name": "高金金融学直博", "fullName": "高级金融学院金融学直博", "count": 1, "type": "phd", "highlight": false }
+                ]
+              },
+              "人大": {
+                "name": "中国人民大学",
+                "logo": "pic/logo/ruc.png",
+                "totalOffers": 7,
+                "color": "#B71C1C",
+                "programs": [
+                  { "name": "财金金融专硕", "fullName": "财政金融学院金融专硕", "count": 2, "type": "master", "highlight": true },
+                  { "name": "经院国际商务专硕", "fullName": "经济学院国际商务专硕", "count": 1, "type": "master", "highlight": false },
+                  { "name": "经院硕博连读", "fullName": "经济学院硕博连读", "count": 1, "type": "phd", "highlight": false },
+                  { "name": "商院资产定价专硕", "fullName": "商学院资产定价专硕", "count": 1, "type": "master", "highlight": false },
+                  { "name": "商院会计学直博", "fullName": "商学院会计学直博", "count": 1, "type": "phd", "highlight": false },
+                  { "name": "统计学院应用统计专硕", "fullName": "统计学院应用统计专硕", "count": 1, "type": "master", "highlight": false }
+                ]
+              }
+            }
+          }
+        },
+        "studyAbroadOffers": {
+          "2018-2020": {
+            "total": 25,
+            "regions": {
+              "北美": {
+                "center": [-98.5795, 39.8283],
+                "offers": 12,
+                "schools": [
+                  { "name": "哈佛大学", "value": [-71.1167, 42.3770, 1] },
+                  { "name": "耶鲁大学", "value": [-72.9279, 41.3083, 1] },
+                  { "name": "麻省理工大学", "value": [-71.0942, 42.3601, 1] },
+                  { "name": "卡耐基梅隆大学", "value": [-79.9436, 40.4433, 1] },
+                  { "name": "宾夕法尼亚大学", "value": [-75.1932, 39.9522, 1] },
+                  { "name": "加州大学伯克利分校", "value": [-122.2585, 37.8719, 2] },
+                  { "name": "杜克大学", "value": [-78.9382, 36.0014, 1] },
+                  { "name": "纽约大学", "value": [-73.9967, 40.7295, 1] },
+                  { "name": "康奈尔大学", "value": [-76.4735, 42.4440, 1] },
+                  { "name": "布朗大学", "value": [-71.4025, 41.8268, 1] },
+                  { "name": "纽约城市大学", "value": [-73.9687, 40.7828, 1] }
+                ]
+              },
+              "欧洲": {
+                "center": [2.3522, 48.8566],
+                "offers": 4,
+                "schools": [
+                  { "name": "剑桥大学", "value": [0.1218, 52.2053, 1] },
+                  { "name": "伦敦商学院", "value": [-0.1604, 51.5273, 2] },
+                  { "name": "伦敦政治经济学院", "value": [-0.1165, 51.5145, 1] }
+                ]
+              },
+              "港新": {
+                "center": [114.1694, 22.3193],
+                "offers": 2,
+                "schools": [
+                  { "name": "香港大学", "value": [114.1379, 22.2840, 1] },
+                  { "name": "香港科技大学", "value": [114.2655, 22.3364, 1] }
+                ]
+              }
+            }
+          }
+        },
+        "internships": {
+          "2020-2023": {
+            "categories": {
+              "PE/VC/FA/投行/产业资本": [
+                { "company": "Morgan Stanley", "type": "投行", "logo": "ms_logo.png" },
+                { "company": "中金资本", "type": "PE", "logo": "cicc_logo.png" },
+                { "company": "华熙生物", "type": "产业资本", "logo": "bloomage_logo.png" },
+                { "company": "京东", "type": "产业资本", "logo": "jd_logo.png" },
+                { "company": "中信证券", "type": "券商", "logo": "citic_logo.png" },
+                { "company": "IDG Capital", "type": "VC", "logo": "idg_logo.png" }
+              ],
+              "二级投研": [
+                { "company": "淡水泉投资", "type": "私募", "logo": "springs_logo.png" },
+                { "company": "中金公司", "type": "券商投研", "logo": "cicc_logo.png" },
+                { "company": "中欧瑞博投资", "type": "私募", "logo": "rabbit_logo.png" },
+                { "company": "中信建投证券", "type": "券商", "logo": "csc_logo.png" }
+              ],
+              "战略/咨询/科技": [
+                { "company": "BCG", "type": "咨询", "logo": "bcg_logo.png" },
+                { "company": "贝恩", "type": "咨询", "logo": "bain_logo.png" },
+                { "company": "罗兰贝格", "type": "咨询", "logo": "rb_logo.png" },
+                { "company": "字节跳动", "type": "科技", "logo": "bytedance_logo.png" },
+                { "company": "腾讯", "type": "科技", "logo": "tencent_logo.png" },
+                { "company": "万事达卡", "type": "金融科技", "logo": "mastercard_logo.png" },
+                { "company": "阿里巴巴", "type": "科技", "logo": "alibaba_logo.png" }
+              ],
+              "量化": [
+                { "company": "摩根士丹利投资管理", "type": "量化投资", "logo": "msim_logo.png" },
+                { "company": "WorldQuant", "type": "量化基金", "logo": "wq_logo.png" },
+                { "company": "康曼德资本", "type": "量化私募", "logo": "commando_logo.png" },
+                { "company": "正定私募基金", "type": "量化私募", "logo": "definite_logo.png" },
+                { "company": "稳博投资", "type": "量化私募", "logo": "wequant_logo.png" }
+              ]
+            }
+          }
+        },
+        "fullTimeOffers": {
+          "2017-2020": {
+            "categories": {
+              "咨询": ["BCG", "德勤监察"],
+              "银行": ["国家开发银行", "中国建设银行", "中国工商银行", "中国农业银行"],
+              "券商/投行/FA": ["Morgan Stanley", "瑞信", "高盛", "瑞银", "花旗银行", "中金公司"],
+              "PE/VC/公募/资管": ["高瓴资本", "淡马锡", "易方达", "中金资本", "中投公司", "泰康", "华安基金"],
+              "科技": ["Google", "英伟达", "腾讯", "字节跳动", "拼多多", "美团", "淘天集团"]
+            }
+          }
+        },
+        "competitions": {
+          "2019-2022": {
+            "awards": [
+              { "name": "国家奖学金", "type": "奖学金", "level": "国家级" },
+              { "name": "学习优秀特等奖学金", "type": "奖学金", "level": "校级" },
+              { "name": "北大光华案例分析大赛", "result": "冠军", "type": "竞赛", "level": "校际" },
+              { "name": "清华经管今经乐道大赛", "result": "全国二十强", "type": "竞赛", "level": "全国" },
+              { "name": "复旦管院石锋资产杯", "result": "金牛奖银奖", "type": "竞赛", "level": "全国" },
+              { "name": "上交高金峰会", "result": "冠军", "type": "竞赛", "level": "校际" },
+              { "name": "尖峰时刻商业模拟大赛", "result": "一等奖", "type": "竞赛", "level": "全国" },
+              { "name": "万事达卡案例咨询大赛", "result": "季军", "type": "竞赛", "level": "全国" },
+              { "name": "美国大学生数学建模竞赛", "result": "O奖", "type": "竞赛", "level": "国际" }
+            ],
+            "research": [
+              { "name": "中国-东盟峰会最佳立场文件奖", "type": "学术", "level": "国际" },
+              { "name": "全国高校本科生经济学年会", "result": "一等奖", "type": "学术", "level": "全国" },
+              { "name": "经世学者论坛", "result": "最佳论文奖", "type": "学术", "level": "全国" }
+            ]
+          }
+        }
+      };
+      
+      // 数据加载完成后初始化图表
+      setTimeout(() => {
+        renderChart('graduate');
+      }, 500);
+
+      // 初始化图表数据（备用）
+      const chartData = {
+        abroad: {
+          regions: ['哈佛耶鲁MIT', '其他常春藤', '英国G5', '港新顶校', '其他名校'],
+          counts: [3, 8, 5, 2, 7],
+          colors: ['#e74c3c', '#3498db', '#9b59b6', '#f39c12', '#2ecc71']
+        },
+        internship: {
+          categories: ['PE/VC/投行', '二级投研', '战略/咨询/科技', '量化'],
+          counts: [45, 30, 65, 30],
+          colors: ['#ff7675', '#74b9ff', '#00b894', '#fdcb6e']
+        },
+        fulltime: {
+          sectors: ['投行', '投资', '咨询/战略', '互联网/科技', '其他'],
+          counts: [8, 12, 6, 15, 9],
+          colors: ['#e17055', '#00cec9', '#6c5ce7', '#a29bfe', '#fd79a8']
+        }
+      };
+
+      // 渲染图表函数
+      function renderChart(type) {
+        switch (type) {
+          case 'graduate':
+            renderGraduateSchools();
+            break;
+          case 'abroad':
+            renderTraditionalChart('abroadChart', createWorldMapChart(achievementsData.studyAbroadOffers['2018-2020'], '留学offer分布'));
+            break;
+          case 'internship':
+            renderLogoWall('internshipLogoWall', achievementsData.internships['2020-2023'].categories);
+            break;
+          case 'fulltime':
+            renderLogoWall('fulltimeLogoWall', achievementsData.fullTimeOffers['2017-2020'].categories);
+            break;
+          case 'awards':
+            // The awards section is static HTML, so no JS rendering is needed.
+            break;
+        }
+      }
+
+      // 渲染Logo墙
+      function renderLogoWall(containerId, categories) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        container.innerHTML = Object.entries(categories).map(([categoryName, companies]) => `
+          <div class="logo-category">
+            <h4 class="category-title">${categoryName}</h4>
+            <div class="logo-grid">
+              ${companies.map(company => {
+                // 如果是对象，则取company.company；如果是字符串，则直接使用
+                const companyName = typeof company === 'object' ? company.company : company;
+                const logoPath = `pic/logo/${companyName.toLowerCase().replace(/[\s&]/g, '_').replace(/\./g, '')}.png`; // 更安全的路径转换
+                return `
+                  <div class="logo-item" data-company-name="${companyName}">
+                    <img src="${logoPath}" alt="${companyName}" onerror="this.parentElement.classList.add('no-logo')">
+                    <div class="logo-tooltip">${companyName}</div>
+                  </div>
+                `;
+              }).join('')}
+            </div>
+          </div>
+        `).join('');
+      }
+
+      // 渲染传统图表
+      function renderTraditionalChart(containerId, option) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+
+        let chart = echarts.getInstanceByDom(container);
+        if (!chart) {
+          chart = echarts.init(container);
+        }
+        
+        chart.setOption(option, true);
+        
+        // 为世界地图添加点击事件
+        if (containerId === 'abroadChart') {
+          // chart.on('click', function (params) {
+          //   if (params.seriesType === 'effectScatter') {
+          //     updateMapForRegion(chart, params.name);
+          //   }
+          // });
+        }
+        
+        // 响应式
+        window.addEventListener('resize', () => {
+          chart.resize();
+        });
+      }
+
+      // 渲染保研学校卡片
+      function renderGraduateSchools() {
+        const container = document.getElementById('schoolsGrid');
+        if (!container || !achievementsData) return;
+
+        const schoolsData = achievementsData.graduateOffers['2020-2021'].schools;
+        container.innerHTML = '';
+        
+        // 自定义排序
+        const schoolOrder = ['北大', '清华','人大', '复旦', '上交'];
+
+        const sortedSchools = Object.entries(schoolsData).sort(([a], [b]) => {
+          return schoolOrder.indexOf(a) - schoolOrder.indexOf(b);
+        });
+
+        sortedSchools.forEach(([key, school]) => {
+          const schoolCard = createSchoolCard(school);
+          container.appendChild(schoolCard);
+        });
+
+        // 添加弹窗事件监听
+        setupModalEvents();
+      }
+
+      // 创建学校卡片
+      function createSchoolCard(school) {
+        const card = document.createElement('div');
+        card.className = 'school-card';
+        card.style.setProperty('--school-color', school.color);
+        
+        // 将颜色转换为RGB值用于CSS变量
+        const rgb = hexToRgb(school.color);
+        if (rgb) {
+          card.style.setProperty('--school-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        }
+        
+        // 获取亮点项目（highlight为true的项目）
+        const highlightPrograms = school.programs.filter(p => p.highlight);
+        
+        card.innerHTML = `
+          <div class="school-header">
+            <img src="${school.logo}" alt="${school.name}" class="school-logo">
+            <div class="school-info">
+              <h4>${school.name}</h4>
+            </div>
+          </div>
+          <div class="school-offers">${school.totalOffers} 枚offer</div>
+          <div class="highlight-programs">
+            ${highlightPrograms.map(program => 
+              `<span class="program-tag">${program.name}</span>`
+            ).join('')}
+          </div>
+          <div class="view-details">查看详细项目</div>
+        `;
+        
+        // 添加点击事件
+        card.addEventListener('click', () => {
+          showProgramModal(school);
+        });
+        
+        return card;
+      }
+
+      // 显示项目详情弹窗
+      function showProgramModal(school) {
+        const modal = document.getElementById('programModal');
+        const modalSchoolLogo = document.getElementById('modalSchoolLogo');
+        const modalSchoolName = document.getElementById('modalSchoolName');
+        const modalSchoolOffers = document.getElementById('modalSchoolOffers');
+        const programsList = document.getElementById('programsList');
+        
+        // 设置学校信息
+        modalSchoolLogo.src = school.logo;
+        modalSchoolLogo.alt = school.name;
+        modalSchoolName.textContent = school.name;
+        modalSchoolOffers.textContent = `共获得 ${school.totalOffers} 枚 offer`;
+        
+        // 设置主题色
+        modal.style.setProperty('--school-color', school.color);
+        const rgb = hexToRgb(school.color);
+        if (rgb) {
+          modal.style.setProperty('--school-color-rgb', `${rgb.r}, ${rgb.g}, ${rgb.b}`);
+        }
+        
+        // 生成项目列表
+        programsList.innerHTML = school.programs.map(program => `
+          <div class="program-item">
+            <div class="program-info">
+              <h5>${program.name}</h5>
+              <p>${program.fullName}</p>
+            </div>
+            <div class="program-count">
+              <span class="count-badge">${program.count}</span>
+              <span class="type-badge ${program.type}">${program.type === 'master' ? '硕士' : '博士'}</span>
+            </div>
+          </div>
+        `).join('');
+        
+        // 显示弹窗
+        modal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+      }
+
+      // 设置弹窗事件
+      function setupModalEvents() {
+        const modal = document.getElementById('programModal');
+        const modalClose = document.getElementById('modalClose');
+        const modalOverlay = document.getElementById('modalOverlay');
+        
+        function closeModal() {
+          modal.classList.remove('active');
+          document.body.style.overflow = '';
+        }
+        
+        modalClose.addEventListener('click', closeModal);
+        modalOverlay.addEventListener('click', closeModal);
+        
+        // ESC键关闭
+        document.addEventListener('keydown', (e) => {
+          if (e.key === 'Escape' && modal.classList.contains('active')) {
+            closeModal();
+          }
+        });
+      }
+
+      // 颜色转换工具函数
+      function hexToRgb(hex) {
+        const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+        return result ? {
+          r: parseInt(result[1], 16),
+          g: parseInt(result[2], 16),
+          b: parseInt(result[3], 16)
+        } : null;
+      }
+
+      // 世界地图配置
+      function createWorldMapChart(data, title) {
+        const regions = Object.entries(data.regions).map(([name, regionData]) => ({
+          name,
+          value: [...regionData.center, regionData.offers],
+          schools: regionData.schools.map(s => s.name)
+        }));
+
+        return {
+          title: {
+            text: title,
+            left: 'center',
+            top: 20,
+            textStyle: { fontSize: 16, fontWeight: 'bold', color: '#333' }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: params => {
+              let schoolList = params.data.schools.map(school => `<li>${school}</li>`).join('');
+              return `
+                <div style="
+                  box-shadow: 0 5px 15px rgba(0,0,0,0.1); 
+                  border-radius: 8px; 
+                  padding: 15px;
+                  background-color: #fff;
+                  width: 200px;
+                ">
+                  <h4 style="
+                    margin: 0 0 10px 0; 
+                    padding-bottom: 5px;
+                    border-bottom: 1px solid #eee;
+                    font-size: 16px;
+                    color: #333;
+                  ">${params.name} (${params.value[2]}枚 offer)</h4>
+                  <ul style="margin: 0; padding-left: 20px; font-size: 14px; color: #555;">
+                    ${schoolList}
+                  </ul>
+                </div>
+              `;
+            },
+            backgroundColor: 'rgba(0,0,0,0)',
+            borderColor: 'transparent',
+            textStyle: { color: '#333' }
+          },
+          geo: {
+            map: 'world',
+            roam: false, // 禁用缩放和拖拽
+            zoom: 1.2,
+            itemStyle: {
+              areaColor: '#e9e9e9',
+              borderColor: '#ccc'
+            },
+            emphasis: {
+              focus: 'self',
+              itemStyle: {
+                areaColor: '#dcdcdc'
+              },
+              label: {
+                show: false
+              }
+            }
+          },
+          series: [
+            {
+              type: 'effectScatter',
+              coordinateSystem: 'geo',
+              data: regions,
+              symbolSize: val => val[2] * 2 + 12,
+              rippleEffect: { brushType: 'stroke', scale: 4 },
+              label: {
+                show: true,
+                formatter: '{b}',
+                position: 'top',
+                color: '#444',
+                fontWeight: 'bold',
+                distance: 10
+              },
+              itemStyle: { 
+                color: '#6366f1',
+                shadowBlur: 10,
+                shadowColor: 'rgba(99, 102, 241, 0.5)'
+              }
+            }
+          ]
+        };
+      }
+
+      // 柱状图配置
+      function createBarChart(data, title, xAxisName, yAxisName) {
+        return {
+          title: {
+            text: title,
+            left: 'center',
+            textStyle: {
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: '#333'
+            }
+          },
+          tooltip: {
+            trigger: 'axis',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ddd',
+            textStyle: { color: '#333' }
+          },
+          xAxis: {
+            type: 'category',
+            data: data.schools,
+            name: xAxisName,
+            nameTextStyle: { color: '#666' },
+            axisLabel: { color: '#666' }
+          },
+          yAxis: {
+            type: 'value',
+            name: yAxisName,
+            nameTextStyle: { color: '#666' },
+            axisLabel: { color: '#666' }
+          },
+          series: [{
+            type: 'bar',
+            data: data.offers.map((value, index) => ({
+              value: value,
+              itemStyle: {
+                color: data.colors[index],
+                borderRadius: [4, 4, 0, 0]
+              }
+            })),
+            animationDuration: 1500,
+            animationEasing: 'cubicOut'
+          }]
+        };
+      }
+
+      // 饼图配置
+      function createPieChart(data, title) {
+        return {
+          title: {
+            text: title,
+            left: 'center',
+            textStyle: {
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: '#333'
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} ({d}%)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ddd',
+            textStyle: { color: '#333' }
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left',
+            textStyle: { color: '#666' }
+          },
+          series: [{
+            name: '分布情况',
+            type: 'pie',
+            radius: '60%',
+            center: ['50%', '60%'],
+            data: data.regions.map((name, index) => ({
+              value: data.counts[index],
+              name: name,
+              itemStyle: { color: data.colors[index] }
+            })),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDuration: 1000
+          }]
+        };
+      }
+
+      // 环形图配置
+      function createDoughnutChart(data, title) {
+        return {
+          title: {
+            text: title,
+            left: 'center',
+            textStyle: {
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: '#333'
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            formatter: '{a} <br/>{b}: {c} ({d}%)',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ddd',
+            textStyle: { color: '#333' }
+          },
+          legend: {
+            bottom: 'bottom',
+            textStyle: { color: '#666' }
+          },
+          series: [{
+            name: '实习分布',
+            type: 'pie',
+            radius: ['40%', '70%'],
+            center: ['50%', '50%'],
+            data: data.categories.map((name, index) => ({
+              value: data.counts[index],
+              name: name,
+              itemStyle: { color: data.colors[index] }
+            })),
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            animationType: 'scale',
+            animationEasing: 'elasticOut',
+            animationDuration: 1000
+          }]
+        };
+      }
+
+      // 雷达图配置
+      function createRadarChart(data, title) {
+        return {
+          title: {
+            text: title,
+            left: 'center',
+            textStyle: {
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: '#333'
+            }
+          },
+          tooltip: {
+            trigger: 'item',
+            backgroundColor: 'rgba(255, 255, 255, 0.9)',
+            borderColor: '#ddd',
+            textStyle: { color: '#333' }
+          },
+          radar: {
+            indicator: data.sectors.map(sector => ({
+              name: sector,
+              max: 20
+            })),
+            splitArea: {
+              areaStyle: {
+                color: ['rgba(250, 250, 250, 0.1)', 'rgba(200, 200, 200, 0.1)']
+              }
+            },
+            axisLabel: {
+              color: '#666'
+            }
+          },
+          series: [{
+            name: '全职去向',
+            type: 'radar',
+            data: [{
+              value: data.counts,
+              name: '人数分布',
+              areaStyle: {
+                color: 'rgba(99, 102, 241, 0.2)'
+              },
+              lineStyle: {
+                color: '#6366f1',
+                width: 2
+              },
+              symbol: 'circle',
+              symbolSize: 6,
+              itemStyle: {
+                color: '#6366f1'
+              }
+            }],
+            animationDuration: 1500,
+            animationEasing: 'cubicOut'
+          }]
+        };
+      }
+
+
     });
 
     // 联系我们表单功能
